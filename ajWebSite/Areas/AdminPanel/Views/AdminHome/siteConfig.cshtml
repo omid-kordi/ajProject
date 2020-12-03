@@ -1,0 +1,66 @@
+﻿@model ajWebSite.Areas.AdminPanel.Models.ticket.ticketIndexModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function submitChanges(sender) {
+            getMostParentWindow().postFormWithOptimizer(sender);
+
+        }
+        function loadDataFromServer() {
+            getMostParentWindow().getData("@Url.Action("getSiteSettings", "AdminHome")", function (data) { 
+                $("[name='AdminEmailAddress']").val(data.adminEmailAddress);
+                $("[name='siteName']").val(data.siteName);
+            });
+        }
+        $(document).ready(function () {
+            loadDataFromServer();
+        });
+    </script>
+</head>
+<body dir="rtl" class="easyui-layout demo-rtl">
+    <div class="container">
+        <form class="formParent" actionUrl="@Url.Action("saveSiteSettings","AdminHome")">
+            <div class="row" style="text-align:right">
+                <div class="col-md-12">
+                    <div class="col-md-3 form-group">
+                        <label>آدرس الکترونیکی:</label>
+                        <div class="input-group">
+                            <input type="text" name="AdminEmailAddress" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label>نام وب سایت:</label>
+                        <div class="input-group">
+                            <input type="text" name="siteName" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <input type="button" class="btn btn-primary btn-md" value="ثبت تغییرات" onclick="submitChanges(this)" />
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

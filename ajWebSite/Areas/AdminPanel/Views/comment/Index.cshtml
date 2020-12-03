@@ -1,0 +1,138 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    //Layout = "~/Areas/AdminPanel/Views/Shared/_layout.cshtml";
+}
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/datagrid-detailview.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function deleteComment(id) {
+            if (!confirm("آیا این کامن حذف گردد.")) {
+                return;
+            }
+            var url = "@Url.Action("deleteComment", "comment")" + "/"+id;
+            getMostParentWindow().getData(url, function (data) {
+                fillGrid();
+            });
+        }
+        function actionsCellTemplate(val, row) {
+            var res = '<span onclick=deleteComment('+row.id+') >';
+            res+='<svg width="1em" style="color:red;cursor:pointer" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">' +
+                '<path fill - rule="evenodd" d = "M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />' +
+                '</svg >';
+            res += '</span>';
+            return res;
+        }
+        ///./function isDeletedTemplate
+        function designGridView() {
+            var dg=$('#ht_commentListContainer').datagrid({
+                title: 'کامنت های کاربران',
+                //width: 500,
+                //height: 250,
+                remoteSort: false,
+                singleSelect: true,
+                nowrap: false,
+                fitColumns: true,
+                columns: [[ 
+
+                    { field: 'commentText', title: 'متن کامنت', sortable: true , width: 500, align: 'center' },
+                    { field: 'ownerUserName', title: 'کاربر درج کننده', width: 60, align: 'center' },
+                    { field: 'IsDelete', title: '', width: 30, formatter: function (val, row) { if (row.isDelete == true) { return 'حذف شده'; } else { return 'حذف نشده'; } } },
+                    { field: 'id', title: 'عملیات', width: 30, formatter: actionsCellTemplate }
+                ]],
+                //view: detailview,
+                detailFormatter: function (rowIndex, rowData) {
+                    //return '<table><h1>Details Contsainer</h1></table > ';
+                },
+                onExpandRow: function (index, row) {
+                    //var ddv = $(this).datagrid('getRowDetail', index).find('div.ddv');
+                    //ddv.panel({
+                    //    height: 80,
+                    //    border: false,
+                    //    cache: false,
+                    //    href: 'datagrid21_getdetail.php?itemid=' + row.itemid,
+                    //    onLoad: function () {
+                    //        $('#dg').datagrid('fixDetailRowHeight', index);
+                    //    }
+                    //});
+                    //$('#dg').datagrid('fixDetailRowHeight', index);
+                }
+            }); 
+        }
+        function fillGrid() {
+            debugger;
+            var url = "@Url.Action("getFullComments", "comment")";
+            var objectData = new Object();
+            var textToSearch = $("#hti_commentText").val();
+            if (textToSearch != null && textToSearch.length > 0) {
+                objectData.commentText = textToSearch;
+            }
+            var userWrite = $("#hi_userWriter").val();
+            if (userWrite != null && userWrite.length > 0) {
+                objectData.userName = userWrite;
+            }
+            if ($("#hi_withDeleted").is(':checked') == true) {
+                objectData.withDeleted = true; 
+            }
+            getMostParentWindow().postData(url, objectData, function (data) {
+                if (data.success) {
+                    $('#ht_commentListContainer').datagrid('loadData', data.data);
+                }
+            });
+        }
+        $(document).ready(function () {
+
+            designGridView();
+            fillGrid();
+        });
+    </script>
+</head>
+<body class="rtl easyui-layout demo-rtl" dir="rtl"> 
+    <h1>Comments Controller</h1>
+    <div class="easyui-panel"
+         style="width:100%;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',collapsible:true," >
+        <div class="col-md-12">
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="id">متن کامنت</label>
+                    <input type="text" class="form-control form-control-sm" name="hti_commentText" id="hti_commentText" aria-describedby="متن کامنت">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id">کاربر درج کننده کامنت</label>
+                    <input type="text" class="form-control form-control-sm" name="hi_userWriter" id="hi_userWriter" aria-describedby="کاربر درج کننده کامنت">
+                </div>
+                <div class="col-md-4">
+                    <input type="checkbox" value="true" checked class="form-check-input" name="hi_withDeleted" id="hi_withDeleted" aria-describedby="نظرات حذف شده">
+                    <label for="isFullRegistered">نظرات حذف شده</label>
+                </div>
+                <div class="form-group col-md-4 center-block">
+                    <button type="button" onclick="fillGrid();" class="btn btn-outline-primary center-block">جستجو</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div  class="easyui-panel"
+         style="width:100%;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',collapsible:true," >
+        <table id="ht_commentListContainer" > </table>
+    </div>
+</body>
+</html>

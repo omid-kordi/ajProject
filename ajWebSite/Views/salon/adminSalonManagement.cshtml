@@ -1,0 +1,157 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = null;
+}
+
+@using ajWebSite.Common.Helpers;
+@using ajWebSite.Common.DTOs.Common;
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/datagrid-detailview.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function changeNewsState(sender) {
+            debugger;
+            var itemId = $(sender).attr("itemId");
+            var newState = $(".itemState", $(sender).closest(".stateConatiner")).val();
+            var dataToSendd = new Object();
+            dataToSendd.salonId = itemId;
+            dataToSendd.salonState = newState;
+            var url = "@Url.Action("updateStateOfSalon", "salon")";
+            getMostParentWindow().postData(url, dataToSendd, function (data) {
+                if (data.success) {
+                    reloadDataOfSalons();
+                }
+            });
+        }
+        function reloadDataOfSalons() {
+            var url = "@Url.Action("getSalons", "salon")";
+            var objectData = new Object(); 
+            if ($("#salonName").val().length>0) {
+                objectData.salonName = $("#salonName").val();
+            }
+            if ($("#salonAddress").val().length > 0) {
+                objectData.salonAddress = $("#salonAddress").val();
+            }
+            if ($("#salonPostalCode").val().length > 0) {
+                objectData.salonPostalCode = $("#salonPostalCode").val();
+            }
+            if ($("#salonPhoneNumber").val().length > 0) {
+                objectData.salonPhoneNumber = $("#salonPhoneNumber").val();
+            }
+            getMostParentWindow().postData(url, objectData, function (data) {
+                if (data.success) {
+                    $('#listOfSalons').datagrid('loadData', data.data);
+                }
+            });
+        }
+        function drawGridOfSalons() {
+
+            var dg = $('#listOfSalons').datagrid({
+                title: 'کامنت های کاربران',
+                //width: 500,
+                //height: 250,
+                remoteSort: false,
+                singleSelect: true,
+                nowrap: false,
+                fitColumns: true,
+                columns: [[
+                    { field: 'saloonName', title: 'نام سالن', sortable: true, width: 500, align: 'center' },
+                    { field: 'addressState', title: 'استان سالن', width: 60, align: 'center' },
+                    { field: 'addressCity', title: 'شهر سالن', width: 30},
+                    { field: 'pstalCode', title: 'کد پستی', width: 30, },
+                    { field: 'salonPhone', title: 'تلفن سالن', width: 30, },
+                    { field: 'stateTitle', title: ' ', width: 30, }
+                ]],
+                view: detailview,
+                detailFormatter: function (rowIndex, rowData) {
+                    @{
+                        var itemData = "";
+                        var data = EnumHelper.GetByName("saloonState").Select(x => new DropdownDTO
+                        {
+                            Id = x.Key,
+                            Desc = x.Value
+                        }).OrderBy(x => x.Desc);
+                        foreach (var item in data)
+                        {
+                            itemData += @"<option value='" + item.Id + @"'>" + item.Desc + @"</option>";
+                        };
+                    }
+                    debugger;
+                    var stateDropDown = "<select class='form-control form-control-sm itemState' value='" + rowData.state+"' >@Html.Raw(itemData)</select>";
+                    var result = '<div class="row stateConatiner" style="padding:20px" ><div class="col-md-12" >' + rowData.seriveses + '</div><div class="col-md-12">' + rowData.packages + '</div>';
+                    result += '<div class="col-md-4" >' + stateDropDown + '</div><div class="col-md-4" ><button class="btn btn-outline-primary" onclick="changeNewsState(this)" itemId="' + rowData.id+'" >تایید</button></div></div>';
+                    return result;
+                },
+                onExpandRow: function (index, row) {
+                    //var ddv = $(this).datagrid('getRowDetail', index).find('div.ddv');
+                    //ddv.panel({
+                    //    height: 80,
+                    //    border: false,
+                    //    cache: false,
+                    //    href: 'datagrid21_getdetail.php?itemid=' + row.itemid,
+                    //    onLoad: function () {
+                    //        $('#dg').datagrid('fixDetailRowHeight', index);
+                    //    }
+                    //});
+                    //$('#dg').datagrid('fixDetailRowHeight', index);
+                }
+            });
+        }
+        $(document).ready(function () {
+            drawGridOfSalons();
+            reloadDataOfSalons();
+        });
+    </script>
+</head>
+<body class="rtl easyui-layout demo-rtl" style="height:100%;overflow:scroll" dir="rtl">
+    <h1>مدیریت سالن</h1>
+
+    <div id="newsAndArticleForm" class="easyui-panel" title=" "
+         style="width:100%;height:220;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',collapsible:true,"> 
+        <div class="row">
+
+            <div class="form-group col-md-4">
+                <label for="salonName">نام سالن</label>
+                <input required type="text" class="form-control form-control-sm" name="salonName" id="salonName" aria-describedby="نام سالن">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="salonAddress">ادرس سالن</label>
+                <input required type="text" class="form-control form-control-sm" name="salonAddress" id="salonAddress" aria-describedby="ادرس سالن">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="username">کد پستی </label>
+                <input required type="text" class="form-control form-control-sm" name="salonPostalCode" id="salonPostalCode" aria-describedby="کد پستی">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="salonPhoneNumber">شماره تلفن</label>
+                <input required type="text" class="form-control form-control-sm" name="salonPhoneNumber" id="salonPhoneNumber" aria-describedby="شماره تلفن">
+            </div>
+            <div class="form-group col-md-4">
+                <button class="btn btn-outline-primary" onclick="reloadDataOfSalons(this)" >جستجو</button>
+            </div>
+        </div>
+    </div>
+    <div class="easyui-panel" title=" "
+         style="width:100%;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',collapsible:true,">
+        <table style="width:100%" id="listOfSalons"></table>
+    </div>
+</body>
+</html>

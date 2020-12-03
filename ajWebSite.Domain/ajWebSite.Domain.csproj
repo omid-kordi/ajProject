@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200611102844_initSql.cs" />
+    <Compile Remove="Migrations\20200611102844_initSql.Designer.cs" />
+    <Compile Remove="Migrations\20200611103352_initSql.cs" />
+    <Compile Remove="Migrations\20200611103352_initSql.Designer.cs" />
+    <Compile Remove="Migrations\20201014173311_initialDatabase.cs" />
+    <Compile Remove="Migrations\20201014173311_initialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20201018172850_ticketSystemCorrectness.cs" />
+    <Compile Remove="Migrations\20201018172850_ticketSystemCorrectness.Designer.cs" />
+    <Compile Remove="Migrations\20201120172406_userTableFileActive.cs" />
+    <Compile Remove="Migrations\20201120172406_userTableFileActive.Designer.cs" />
+    <Compile Remove="Migrations\20201130135628_initSurvey.cs" />
+    <Compile Remove="Migrations\20201130135628_initSurvey.Designer.cs" />
+    <Compile Remove="Migrations\20201130135850_initSurvey.cs" />
+    <Compile Remove="Migrations\20201130135850_initSurvey.Designer.cs" />
+    <Compile Remove="orclMigrations\20200601112123_initSql.cs" />
+    <Compile Remove="orclMigrations\20200601112123_initSql.Designer.cs" />
+    <Compile Remove="orclMigrations\20200601112649_initOrcl.cs" />
+    <Compile Remove="orclMigrations\20200601112649_initOrcl.Designer.cs" />
+    <Compile Remove="sqlMigrations\20200601110544_initSql.cs" />
+    <Compile Remove="sqlMigrations\20200601110544_initSql.Designer.cs" />
+    <Compile Remove="sqlMigrations\20200601110918_initSql.cs" />
+    <Compile Remove="sqlMigrations\20200601110918_initSql.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="orclMigrations\" />
+    <Folder Include="sqlMigrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ajWebSite.Common\ajWebSite.Common.csproj" />
+    <ProjectReference Include="..\ajWebSite.Core\ajWebSite.Core.csproj" />
+  </ItemGroup>
+
+</Project>

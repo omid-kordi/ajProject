@@ -1,0 +1,65 @@
+﻿
+@{
+    //Layout = "~/Areas/AdminPanel/Views/Shared/_layout.cshtml";
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="/lib/bootstrap/dist/css/bootstrap-reboot.css" rel="stylesheet" />
+    <link href="/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script type="text/javascript">
+        var surveyId = "@(Convert.ToString(ViewContext.RouteData.Values["id"]))";
+        function postDataToServer() {
+            $("#surveyFormContainer").submit();
+        }
+        function postAnswersToServer() {
+            debugger;
+            var dataToSendToServer = getMostParentWindow().getOBjectsOfData($("#surveyFormContainer"));
+            var url = "@Url.Action("saveResultWithApi", "survey")";
+            getMostParentWindow().postData(url, { "values": dataToSendToServer }, function (data) {
+                loadAndSetAnsvers(surveyId, data.data);
+            });
+        }
+        function loadAndSetAnsvers(surveyId, questionareId) {
+            var dataToSendToServer = { "surveyId": surveyId, "questionareID": questionareId };
+            var url = "@Url.Action("getAnswers", "survey")";
+            getMostParentWindow().postData(url, dataToSendToServer, function (data) {
+                debugger;
+                $("#hd_surveyContainer").html(data);
+            });
+        }
+        function loadSurvey(surveyId) {
+            var url = "@Url.Action("runSurvey", "survey",new {id="--id--" })";
+            url = url.replace("--id--", surveyId);
+            getMostParentWindow().postData(url, {}, function (data) {
+                debugger;
+               $("#hd_surveyContainer").html(data);
+            });
+        }
+        $(document).ready(function () {
+            var id = "@(Convert.ToString(ViewContext.RouteData.Values["id"]))";
+            loadSurvey(id);
+        })
+
+    </script>
+</head>
+<body class="easyui-layout demo-rtl" style="height:100%"> 
+    <h1>Tessssssssst.........</h1>
+    <div style="width:100%" id="hd_surveyContainer" >
+
+    </div>
+    <div style="width:100%" >
+        <button type="button" class="btn btn-xs btn-outline-primary"  onclick="postAnswersToServer()" >ارسال</button>
+    </div>
+</body>
+</html>

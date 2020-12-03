@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using ajWebSite.Common.Helpers;
+@using ajWebSite.Common.DTOs.Common;
+<script>
+    $(document).ready(function () {
+        getMostParentWindow().loadComments("commentsContainer", "@Url.Action("getComments", "comment")");
+        fillWithUrlResult("votingContainer");
+    });
+</script>
+<div class="container text-center" style="text-align:right">
+    <p><img src="images/animations/rsvp.gif" height="180" alt="" class="skrollable skrollable-after" style=""></p>
+
+    <div class="row">
+        <div class="col-md-8 col-md-push-2">
+            <form action="@Url.Action("createNewTicket","tockens")" method="POST">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6 offset-6 pull-right">
+                            <label>عنوان*</label>
+                            <input type="text" name="title" class="form-control form-opacity">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-6 offset-6 pull-right">
+                            <label>آدرس الکترونیک*</label>
+                            <input type="email" name="emailAddress" class="form-control form-opacity">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-6 offset-6 pull-right">
+                            <label>اهمیت:*</label>
+                            <select name="serverity" class="form-control form-opacity">
+                                @{
+                                    var data = EnumHelper.GetByName("ServerityType").Select(x => new DropdownDTO
+                                    {
+                                        Id = x.Key,
+                                        Desc = x.Value
+                                    }).OrderBy(x => x.Desc);
+
+                                }
+                                @foreach (var item in data)
+                                {
+                                    <option value="@item.Id">@item.Desc</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-12">
+                        <label>توضیحات:</label>
+                        <textarea name="description" class="form-control form-opacity"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" class="btn submit" value="Send">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="votingContainer" class="voteContainr" fillUrl="@Url.Action("getVotes","vote",new {id="12",id2="14",voteOwnerType=1 })" >
+            ffffff
+        </div>
+        <div idItem="12" itemTypeId="1" secondParam="1" class="col-md-8 col-md-push-2 commentsContainer" id="commentsContainer">
+            <div style="display:none" class="loaderInternal"></div>
+            <div class="newMessageContainer">
+                <textArea name="description" class="form-control form-opacity messagetextContaner"></textArea>
+            </div>
+            <div class="col-md-12">
+                <input type="button" value="ثبت" class="btn submit" onclick="submitNewComment(this)" />
+            </div>
+            <div class="messagesContainer">
+                <div class="answer">
+                    <img class="img-comments" alt="" src="images/faces/100x100/rdeovte7vos-christopher-campbell.jpg">
+                    <div class="content-cmt">
+                        <span class="name-cmt">Jonh Doe</span>
+                        <span class="date-cmt">September 16, 2017</span>
+
+                        <p class="content-reply">
+                            Quisque sed metus eu nunc gravida euismod. Vivamus consequat sapien ut tempus hendrerit. Sed blandit vehicula urna sed posuere.
+                            Praesent commodo,
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

@@ -1,0 +1,30 @@
+﻿@model ajWebSite.Areas.AdminPanel.Models.attachments.getAttachmentsModel
+@{
+    Layout = null;
+}
+
+@if (Model.isOwnerSet)
+{
+    @if (Model.attachments.Count < 1)
+    {
+        <h2>فایل ضمیمه ای وجود ندارد</h2>
+    }
+    else
+    {
+        <ul>
+            @foreach (var item in Model.attachments)
+            {
+                <li><a href="@item.filePath">@item.Name</a></li>
+            }
+        </ul>
+    }
+    <div class="fileSenderContainer">
+        <input type="file" /><input type="button" ownerId="@Model.ownerID" value="ثبت ضمیمه..." />
+    </div>
+}
+else
+{
+    <h3>
+        برای ثبت فایل ضمیمه والد باید تایین شده باشد
+    </h3>
+}

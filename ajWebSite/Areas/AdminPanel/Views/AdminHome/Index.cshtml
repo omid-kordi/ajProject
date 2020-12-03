@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    //Layout = "~/Areas/AdminPanel/Views/Shared/_layout.cshtml";
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap-reboot.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script>
+        mostParentWindow = true;
+    </script>
+</head>
+<body class="easyui-layout demo-rtl">
+    <div style="display:none" class="loading">Loading&#8230;</div>
+    <div data-options="region:'north',border:false" style="height:60px;background:#B3DFDA;padding:10px"> </div>
+    <div data-options="region:'west',split:true,title:'پیا مها'" style="width:150px;padding:10px;">پیا مها</div>
+    <div data-options="region:'east',split:true, title:'عملیات ها'" style="width:200px;">
+        <div class="easyui-accordion" data-options="multiple:false" style="width:100%;">
+            <div title="مدیریت" data-options=" " style="overflow:auto;padding:10px;">
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="../../AdminPanel/AdminHome/siteConfig" tabTitle="مشخصات سایت" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">مشخصات سایت</a>
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="@Url.Action("surveyManager","survey")" tabTitle="مدیریت آزمون ها" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">مدیریت آزمون ها</a>
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="@Url.Action("testSurvey","survey")/10" tabTitle="تست آزمون" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">تست آزمون</a>
+            </div>
+            <div title="کاربران" style="padding:10px;">
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="/AdminPanel/user/Index" tabTitle="کاربران" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">کاربران</a>
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="/AdminPanel/comment/Index" tabTitle="کامنت ها" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">مدیریت کامنت ها</a>
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="../../AdminPanel/ticket/Index" tabTitle="پشتیبانی کاربران" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">پشتیبانی کاربران</a>
+            </div>   
+            <div title="اخبار و مقالات" style="padding:10px;">
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="@Url.Action("adminSalonManagement","salon")" tabTitle="مدیریت سالن ها" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">مدیریت سالن ها</a>
+                <a style="width:100%" href="#" onclick="addTabToMainWindowsFreamWork(this); return false;" tabUrl="../../AdminPanel/NewsAndItem/Index" tabTitle="اخبار و مقالات" class="easyui-linkbutton" data-options="iconCls:'icon-add',iconAlign:'left'">اخبار و مقالات</a>
+            </div>
+            <div title="وب سایت" style="padding:10px;">
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;padding:10px;">
+
+    </div>
+    <div data-options="region:'center',title:''">
+        <div id="mainTabContainer" class="easyui-tabs" data-options="fit:true,plain:true"> 
+        </div>
+    </div>
+</body>
+</html>

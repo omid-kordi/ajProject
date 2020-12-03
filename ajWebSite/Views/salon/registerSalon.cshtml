@@ -1,0 +1,215 @@
+﻿@{
+    ViewData["Title"] = "Salon Registeration";
+}
+@section Scripts{
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvxIo0zFrCidgqD0DCsjgMsY0u7hO4TRM&callback=initMap&libraries=&v=weekly" defer></script>
+    <script type="text/javascript">
+        var selectedSalonData = null;
+        function saveSaloonData() {
+            var formObject = $("#hfr_registerSaloon");
+            var dataForSalonToSendToServer = getMostParentWindow().getOBjectsOfData(formObject);
+            dataForSalonToSendToServer.seriveses = tinymce.get('cke_seriveses').getBody().innerHTML;
+            dataForSalonToSendToServer.packages = tinymce.get('cke_packages').getBody().innerHTML;
+            var serverUrl = "@Url.Action("registerSalonData", "salon")";
+            getMostParentWindow().postData(serverUrl, dataForSalonToSendToServer,
+                function (data) {
+                    if (data.success) {
+                        loadMySalon();
+                    }
+                },
+                function () {
+                },
+                function () {
+
+                }
+            )
+        }
+    function loadMySalon() {
+        getMostParentWindow().getData("@Url.Action("getMySalon", "salon")",
+            function (data) {
+                if (data.success) {
+
+                    if (data.data.id && data.data.id > 0) {
+                        selectedSalonData = data.data;
+                        $("#saloonName").val(data.data.saloonName);
+                        $("#id").val(data.data.id);
+                        $("#state").text(data.data.salonStateTitle);
+                        $("#addressState").val(data.data.addressState);
+                        $("#addressCity").val(data.data.addressCity);
+                        $("#addressDetails").val(data.data.addressDetails);
+                        $("#pstalCode").val(data.data.pstalCode);
+                        $("#salonPhone").val(data.data.salonPhone);
+                        var firstEditor = $("#cke_seriveses");
+                        var secondEditor = $("#cke_packages");
+                        tinymce.get('cke_seriveses').getBody().innerHTML = data.data.seriveses;
+                        tinymce.get('cke_packages').getBody().innerHTML = data.data.packages;
+                        $("#locationLat").val(data.data.locationLat);
+                        $("#locationLan").val(data.data.locationLan);
+                    } 
+                    loadImages();
+                }
+            },
+            function () {
+
+            }
+        )
+        }
+        function loadImages() { 
+            var data = $('.addedImage', $("#mySalonImages"));
+            $('.addedImage', $("#mySalonImages")).remove();
+            var urlLoadData = "@Url.Action("getAttachmentsList", "attachments",new { id= "-itemId-", id2= "-itemId2-" })";
+            if (selectedSalonData == null) {
+                return;
+            }
+            if (saveSaloonData.id < 1) {
+                return;
+            }
+            urlLoadData = urlLoadData.replace("-itemId-", selectedSalonData.id);
+            urlLoadData = urlLoadData.replace("-itemId2-", 3);
+            getMostParentWindow().getData(urlLoadData, function (data) { 
+                for (var i = 0; i < data.length; i++) {
+                    var design = "<div class='col-sm-2 gla_anim_box grid-item ceremony pull-left addedImage' ><div class='gla_shop_item'><a href='#'><img src='--imagePath--' alt=''></a></div></div>";
+                    design = design.replace("--imagePath--", data[i].filePath);
+                    $("#mySalonImages").append(design);
+                }
+            })
+        }
+        function initMap() {
+            const myLatlng = { lat: -25.363, lng: 131.044 };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4,
+                center: myLatlng,
+            });
+            // Configure the click listener.
+            map.addListener("click", (mapsMouseEvent) => {
+                $("#locationLat").val(mapsMouseEvent.latLng.lat());
+                $("#locationLan").val(mapsMouseEvent.latLng.lng());
+            });
+        }
+
+        function addAttachmentToItem() {
+            var fileTitle = $("#newImageTitleContainer").val();
+            var formData = new FormData();
+            formData.append('postedFiles', $('#newImageContainer')[0].files[0]);
+            formData.append('attachmentTitle', fileTitle);
+            var urlLoadAttachments = "@Url.Action("addAttachmentSalon", "attachments",new { id = "-itemId-" })";
+            var currentFormId = $("#id").val();
+            urlLoadAttachments = urlLoadAttachments.replace("-itemId-", currentFormId);
+
+            getMostParentWindow().sendFileToServer(urlLoadAttachments, formData,
+                function (data) {
+                    loadImages(); 
+                },
+                function () { },
+                function () { });
+        }
+    function getFormReady() {
+        tinymce.init({
+            directionality: "rtl",
+            toolbar: 'ltr rtl',
+            plugins: 'print preview importcss searchreplace autolink autosave save directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons fullpage',
+            selector: '.ckEditrComponent',  // change this value according to your HTML
+            images_upload_url: '../..@Url.Action("addAttachment", "attachments")',
+            menubar: 'file edit view insert format tools table tc help',
+            toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
+        });
+        initMap();
+    }
+    $(document).ready(function () {
+        getFormReady();
+        setTimeout(function () {
+            loadMySalon();
+        }, 1000)
+
+    })
+    </script>
+}
+<div class="text-center">
+    <div class="container text-center" style="text-align:right">
+        <form id="hfr_registerSaloon" action="@Url.Action("RegisterUser","Auth")">
+            <h1>سالن من</h1>
+            <div class="col-md-12">
+                <input type="hidden" name="id" id="id" class="form-control form-opacity">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>وضعیت سالن در مجموعه</label>
+                    <label  name="state" id="state" ></label>
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>نام سالن*</label>
+                    <input type="text" name="saloonName" id="saloonName" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <h4>نشانی</h4>
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>استان*</label>
+                    <input type="text" name="addressState" id="addressState" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>شهرستان*</label>
+                    <input type="text" name="addressCity" id="addressCity" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>نشانی*</label>
+                    <input type="text" name="addressDetails" id="addressDetails" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>کد پستی*</label>
+                    <input type="text" name="pstalCode" id="pstalCode" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>شماره تلفن*</label>
+                    <input type="text" name="salonPhone" id="salonPhone" class="form-control form-opacity">
+                </div>
+                <div class="col-md-12 pull-right">
+                    <label>امکانات*</label>
+                    <textarea type="text" name="seriveses" id="cke_seriveses" class="ckEditrComponent"></textarea>
+                </div>
+                <div class="col-md-12 pull-right">
+                    <label>پکیج ها*</label>
+                    <textarea type="text" name="packages" id="cke_packages" class="ckEditrComponent"></textarea>
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>موقعیت جغرافیایی*</label>
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>موقعیت جغرافیایی(lat)*</label>
+                    <input type="text" name="locationLat" id="locationLat" class="form-control form-opacity">
+                </div>
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>موقعیت جغرافیایی(lan)*</label>
+                    <input type="text" name="locationLan" id="locationLan" class="form-control form-opacity">
+                </div>
+                <div style="min-height:300px" class="col-md-12" id="map"></div>
+
+                <div id="mySalonImages" class="gla_portfolio_no_padding grid col-md-12" style="overflow:auto;min-height:290px;margin-top:10px" >
+
+                    <!-- item -->
+                    <div class="col-sm-2 grid-item gla_anim_box ceremony pull-left imageContainerr">
+                        <div class="col-md-12 pull-right">
+                            <input type="text" name="imageTitle" placeholder="عنوان تصویر" id="newImageTitleContainer" class="form-control-sm form-opacity ">
+                            <input onchange="addAttachmentToItem();" type="file" style="display:none" id="newImageContainer" />
+                        </div>
+                        <div class="col-md-12" >
+                            <a >
+                                <img  onclick="$('input[type=file]', $(this).closest('.imageContainerr')).click(); "
+                                        style="width:120px;height:120px" src="/images/addImage.png" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 gla_anim_box grid-item ceremony pull-left addedImage">
+                        <div class="gla_shop_item">
+                            <a href="#">
+                                <img src="images/wedding/andy_jeska/600x600/10095808183_874f459e53_k.jpg" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div style="height:300px" class="col-md-12">
+                    <input type="button" onclick="saveSaloonData()" class="btn submit pull-right" value="ثبت">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

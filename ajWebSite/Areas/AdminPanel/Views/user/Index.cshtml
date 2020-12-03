@@ -1,0 +1,188 @@
+﻿@{
+    Layout = null;
+}
+
+@using ajWebSite.Common.Helpers;
+@using ajWebSite.Common.DTOs.Common;
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function saveData() {
+            var formData = $("form");
+            if (getMostParentWindow().validateFormObject(formData) == false) {
+                alert("special abelities!!!!");
+                return;
+            }
+            var objectDataForSave = getMostParentWindow().getOBjectsOfData(formData);
+            var saveUrl = "@Url.Action("saveUser", "user")";
+            getMostParentWindow().postData(saveUrl, objectDataForSave, function (data) {
+                if (data.success) {
+                    $('#usersListContainer').datagrid('load');
+                } else {
+                    alert(data.resultMessage);
+                }
+            });
+        }
+        function setUserData(userData) {
+            $("#id").val(userData.id);
+            $("#name").val(userData.name);
+            $("#lastName").val(userData.lastName);
+            $("#personType").val(userData.personType);
+            $("#userType").val(userData.type);
+            $("#nationalCode").val(userData.nationalCode);
+            $("#mobile").val(userData.mobile);
+            $("#emailAddress").val(userData.emailAddress);
+            $("#isFullRegistered").val(userData.isFullRegistered);
+            $("#shouldPasswordChange").val(userData.shouldPasswordChange);
+        }
+        function rowsClickedItemsList(index, row) {
+            setUserData(row);
+        }
+        function drawForm() {
+            var dgUsers=$('#usersListContainer').datagrid({
+                title: 'لیست کاربران',
+                singleSelect: true,
+                fitColumns: true,
+                onClickRow: rowsClickedItemsList,
+                url: '@Url.Action("getUsers", "user")',
+                columns: [[
+                    { field: 'id', title: 'کد', width: 80, sortable: true },
+                    { field: 'username', title: 'نام کاربری', width: 120 },
+                    { field: 'name', title: 'نام', width: 120 },
+                    { field: 'lastName', title: 'نام خانوادگی', width: 120 },
+                    { field: 'nationalCode', title: 'کد ملی', width: 120 },
+                    { field: 'mobile', title: 'تلفن همراه', width: 120 },
+                    { field: 'emailAddress', title: 'آدرس الکترونیکی', width: 120 },
+                    { field: 'personTypeDesc', title: 'نوع شخص', width: 120 },
+                    { field: 'typeDesc', title: 'نوع کاربر', width: 120 },
+                    { field: 'isFullRegistered', title: 'تایید نهایی', width: 120 }
+                ]],
+                detailFormatter: function (rowIndex, rowData) {
+                    return '<h1>آفرین...</h1>';
+                }
+            });
+            dgUsers.datagrid('enableFilter', [{
+                field: 'Mobile',
+                type: 'numberbox',
+                options: { precision: 1 },
+                op: ['equal', 'notequal', 'less', 'greater']
+            }]);
+        }
+        $(document).ready(function () {
+            drawForm();
+        });
+    </script>
+</head>
+<body class="rtl easyui-layout demo-rtl" dir="rtl">
+    <h3 style="margin:5px">کاربران</h3>
+    <div id="newsAndArticleForm" class="easyui-panel" title="مشخصات کاربر"
+         style="width:100%;height:500px;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',collapsible:true,">
+        <form>
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="id">کد پرسنلی</label>
+                    <input  readonly type="text" class="form-control form-control-sm" name="id" id="id" aria-describedby="کد پرسنلی">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="username">نام</label>
+                    <input required type="text" class="form-control form-control-sm" name="name" id="name" aria-describedby="نام">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="lastName">نام خانوادگی</label>
+                    <input type="text" class="form-control form-control-sm" name="lastName" id="lastName" aria-describedby="نام خانوادگی">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="personType">نوع شخص</label>
+                    <select class="form-control form-control-sm" name="personType" id="personType">
+                        @{
+                            var data = EnumHelper.GetByName("PersonType").Select(x => new DropdownDTO
+                            {
+                                Id = x.Key,
+                                Desc = x.Value
+                            }).OrderBy(x => x.Desc);
+
+                        }
+                        @foreach (var item in data)
+                        {
+                            <option value="@item.Id">@item.Desc</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="type">نوع پرسنل</label>
+                    <select class="form-control form-control-sm" name="type" id="type">
+                        @{
+                            data = EnumHelper.GetByName("UserType").Select(x => new DropdownDTO
+                            {
+                                Id = x.Key,
+                                Desc = x.Value
+                            }).OrderBy(x => x.Desc);
+
+                        }
+                        @foreach (var item in data)
+                        {
+                            <option value="@item.Id">@item.Desc</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="nationalCode">کد ملی</label>
+                    <input type="text" class="form-control form-control-sm" name="nationalCode" id="nationalCode" aria-describedby="کد ملی">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="mobile">تلفن همراه</label>
+                    <input type="text" class="form-control form-control-sm" name="mobile" id="mobile" aria-describedby="تلفن همراه">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="emailAddress">آدرس الکترونیکی</label>
+                    <input type="text" class="form-control form-control-sm" name="emailAddress" id="emailAddress" aria-describedby="آدرس الکترونیکی">
+                </div>
+                <div class="form-check col-md-4">
+                    <input type="checkbox" class="form-check-input" name="isFullRegistered" id="isFullRegistered" aria-describedby="تایید اتمام ثبت نام">
+                    <label for="isFullRegistered">تایید اتمام ثبت نام</label>
+                </div>
+                <div class="form-check col-md-4">
+                    <input class="form-check-input" type="checkbox" name="shouldPasswordChange" id="shouldPasswordChange">
+                    <label for="shouldPasswordChange">تغییر رمز ورود</label>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="password">رمز ورود</label>
+                    <input type="password" class="form-control form-control-sm" name="password" id="password" aria-describedby="رمز ورود">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="passwordRepitation">تکرار رمز ورود</label>
+                    <input type="password" class="form-control form-control-sm" name="passwordRepitation" id="passwordRepitation" aria-describedby="تکرار رمز ورود">
+                </div>
+                <div class="form-group col-md-4">
+                    <input type="button" class="btn btn-outline-primary " onclick="saveData()" value="ذخیره" />
+                    <input type="button" class="btn btn-outline-secondary " value="جدید" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="p" class="easyui-panel" title="کابران"
+         style="width:100%;height:9000px;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',
+                collapsible:true,">
+        <table style="width:100%" id="usersListContainer"></table>
+    </div>
+</body>
+</html>

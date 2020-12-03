@@ -1,0 +1,22 @@
+﻿@model ajWebSite.Areas.AdminPanel.Models.survey.runSurveyModel;
+    <form method="post" action="@Url.Action("saveResult","survey")" id="surveyFormContainer" >
+
+        <h1>@Model.selectedSurvey.title</h1>
+        <div class="row">
+            @foreach (var item in Model.selectedSurvey.questions)
+            {
+                <div class="col-md-12">
+                    <div class="form-group" style="text-align:right">
+                        <input type="hidden" id="questionIdContaire" />
+                        <label for="exampleInputEmail1">@item.questionTitle</label>
+                        <select class="form-control" name="qa-@item.Id">
+                            @foreach (var selectOptions in item.questionOptions.Split(','))
+                            {
+                                <option value="@selectOptions">@selectOptions</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>

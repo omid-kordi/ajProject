@@ -1,0 +1,59 @@
+﻿ 
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <meta name="viewport" content="width=device-width" />
+    <title>login</title>
+    <script type="text/javascript">
+        function logout() {
+            var logOutUrl = "@Url.Action("logOut","Auth")";
+            postData(logOutUrl, {}, function (data) { 
+            })
+        }
+        function login(sender){
+            postForm(sender, function (data) { 
+                var tt = urlParams;
+                var tempVar = document.location.href;
+                document.location.href = "";
+                document.location.href = tempVar;
+            }, function () { 
+            }, function () { 
+            });
+        }
+    </script>
+</head>
+<body>
+   <form actionUrl="@Url.Action("loginP","Auth")">
+       <div>
+           <div>
+               رمز ورود:
+               <input type="text" name="userName" />
+           </div>
+           <div>
+               رمز ورود:
+               <input type="text" name="passWord"/>
+           </div>
+           <div>
+               <button type="button" onclick="login(this)">لاگین...</button> 
+                   <button actionUrl="@Url.Action("logOut","Auth")" type="button" onclick="logout(this)">خروج...</button> 
+           </div>
+       </div>
+   </form>
+</body>
+</html>

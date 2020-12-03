@@ -1,0 +1,9 @@
+﻿@model int
+@for (int i = 0; i < Model; i++)
+{
+    <span class="ti ti-heart-positive positiveVoteHeart" onclick="SubmitNewVote(this,  @(i+1));">❤</span>
+}
+@for (int i = 0; i < (5 - Model); i++)
+{
+    <span class="ti ti-heart-negative negativeVoteHeart" onclick="SubmitNewVote(this, @(i + Model+1));">❤</span>
+} 

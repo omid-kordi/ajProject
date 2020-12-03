@@ -1,0 +1,161 @@
+﻿@model ajWebSite.Models.salon.salonModel
+@using ajWebSite.Common.Enums;
+@{
+
+}
+@section Scripts{
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvxIo0zFrCidgqD0DCsjgMsY0u7hO4TRM&callback=initMap&libraries=&v=weekly" defer></script>
+    <script type="text/javascript">
+        var map;
+        var myCenter = null;
+        var marker;
+        var infowindow;
+        function initMap() {
+            myCenter = new google.maps.LatLng(@Model.selectedSalon.locationLat, @Model.selectedSalon.locationLan);
+            var mapProp = {
+                center: myCenter,
+                zoom: 5,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            google.maps.event.addListener(map, 'click', function (event) {
+                placeMarker(event.latLng);
+            });
+        }
+        function initMap() {
+
+        }
+        function placeMarker(location) {
+            if (!marker || !marker.setPosition) {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                });
+            } else {
+                marker.setPosition(location);
+            }
+            if (!!infowindow && !!infowindow.close) {
+                infowindow.close();
+            }
+            infowindow = new google.maps.InfoWindow({
+                content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+            });
+            infowindow.open(map, marker);
+        }
+        $(document).ready(function () {
+            debugger;
+            initMap();
+            getMostParentWindow().loadComments("commentsContainer", "@Url.Action("getComments", "comment")");
+        })
+    </script>
+}
+<div class="text-center">
+    <section class="gla_section">
+
+        <div class="container text-center">
+            <div class="col-md-12">
+                <h3>نام</h3>
+                <h4>@Model.selectedSalon.saloonName</h4>
+            </div>
+            <div class="col-md-12">
+                <h3>نام مدیریت</h3>
+                <h4>@Model.selectedSalon.managementBy</h4>
+            </div>
+            <div class="col-md-12">
+                <h3>نشانی</h3>
+                <h4>@(Model.selectedSalon.state+"-"+ Model.selectedSalon.addressCity + "-" +Model.selectedSalon.addressDetails)</h4>
+            </div>
+            <div class="col-md-12">
+                <h3>کد پستی</h3>
+                <h4>@Model.selectedSalon.pstalCode</h4>
+            </div>
+            <div class="col-md-12">
+                <h3>شماره تماس</h3>
+                <h4>@Model.selectedSalon.salonPhone</h4>
+            </div>
+            <div class="col-md-12">
+                <h3>شماره تماس</h3>
+                <h4>@Model.selectedSalon.salonPhone</h4>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <br />
+            </div>
+            <div class="col-md-12">
+
+                <div class="tabsss">
+                    <ul class="nav nav-tabs bootstrap-tabs">
+                        <li class="active"><a href="05_01_shortcodes.html#about-tab" class="a-inv" data-toggle="tab">سرویس ها</a></li>
+                        <li><a href="05_01_shortcodes.html#contact-tab" class="a-inv" data-toggle="tab">پکیج</a></li>
+                        <li><a href="05_01_shortcodes.html#comments" class="a-inv" data-toggle="tab">نظرات</a></li>
+                        <li><a href="05_01_shortcodes.html#questionAndAnswer" class="a-inv" data-toggle="tab">پرسش و پاسخ</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="about-tab" style="overflow-wrap: anywhere;" >
+                            @Html.Raw(Model.selectedSalon.seriveses)
+                        </div>
+                        <div class="tab-pane fade" id="contact-tab" style="overflow-wrap: anywhere;">
+                            @Html.Raw(Model.selectedSalon.packages)
+                        </div>
+                        <div class="tab-pane fade" id="comments">
+                            <div idItem="@Model.selectedSalon.Id" itemTypeId="@commentType.comment" secondParam="1" class="col-md-8 col-md-push-2 commentsContainer" id="commentsContainer">
+                                <div style="display:none" class="loaderInternal"></div>
+                                <div class="newMessageContainer">
+                                    <textArea name="description" class="form-control form-opacity messagetextContaner"></textArea>
+                                </div>
+                                <div class="col-md-12">
+                                    <input type="button" value="ثبت" class="btn submit" onclick="submitNewComment(this)" />
+                                </div>
+                                <div class="messagesContainer">
+                                    <div class="answer">
+                                        <img class="img-comments" alt="" src="images/faces/100x100/rdeovte7vos-christopher-campbell.jpg">
+                                        <div class="content-cmt">
+                                            <span class="name-cmt">Jonh Doe</span>
+                                            <span class="date-cmt">September 16, 2017</span>
+
+                                            <p class="content-reply">
+                                                Quisque sed metus eu nunc gravida euismod. Vivamus consequat sapien ut tempus hendrerit. Sed blandit vehicula urna sed posuere.
+                                                Praesent commodo,
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="questionAndAnswer">
+                            <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="gla_team_slider_single">
+                    <div class="gla_reviews_item">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam magni aperiam perferendis quas eveniet. Aspernatur nisi debitis mollitia perspiciatis. Aspernatur fugiat velit vel excepturi explicabo dolore! Voluptatem, quo dolores accusantium.</p>
+                        <div class="gla_reviews_item_img">
+                            <img src="/images/faces/100x100/1qyw0de2xc8-clem-onojeghuo.jpg" alt="">
+                        </div>
+                        <p>Mirabelle Noelene</p>
+                    </div>
+                    <div class="gla_reviews_item">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam magni aperiam perferendis quas eveniet. Aspernatur nisi debitis mollitia perspiciatis. Aspernatur fugiat velit vel excepturi explicabo dolore! Voluptatem, quo dolores accusantium.</p>
+                        <div class="gla_reviews_item_img">
+                            <img src="/images/faces/100x100/4g1xtqiq06o-andrew-branch.jpg" alt="">
+                        </div>
+                        <p>Claude Allegra</p>
+                    </div>
+                    <div class="gla_reviews_item">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam magni aperiam perferendis quas eveniet. Aspernatur nisi debitis mollitia perspiciatis. Aspernatur fugiat velit vel excepturi explicabo dolore! Voluptatem, quo dolores accusantium.</p>
+                        <div class="gla_reviews_item_img">
+                            <img src="/images/faces/100x100/6sb3h9ekz04-matthew-kane.jpg" alt="">
+                        </div>
+                        <p>Emmaline Cynthia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

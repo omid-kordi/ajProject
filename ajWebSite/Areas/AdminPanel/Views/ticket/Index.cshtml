@@ -1,0 +1,207 @@
+﻿@model ajWebSite.Areas.AdminPanel.Models.ticket.ticketIndexModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+
+        var sessionID = '';
+        var messageText = '';
+        var title = "";
+        var serverityLevel= "";
+        var SenderId = 0;
+        var senderName = "";
+        var RecieverId = 0;
+        var RecieverName = "";
+        var messageTitle = "";
+        function sendNewMessage() { 
+            if (sessionID.length < 2) {
+                alert('لطفا مکالمه ای جهت پاسخ انتخاب نمائید...');
+                return;
+            }
+            var objectModelForSending = new Object();
+            objectModelForSending.sessionID = sessionID;
+            objectModelForSending.messageText = tinymce.get('newMessageContainer').getBody().innerHTML;
+            objectModelForSending.title = title;
+            objectModelForSending.serverityLevel = serverityLevel;
+            objectModelForSending.SenderId = RecieverId || 0;
+            objectModelForSending.RecieverId = SenderId || 0;
+            objectModelForSending.messageTitle = messageTitle;
+            var urlForSendData = "@Url.Action("addMessage", "ticket")";
+            getMostParentWindow().postData(urlForSendData, objectModelForSending,
+                function (data) {
+                    loadMessageData(sessionID);
+                    reloadDiscussions();
+                },
+                function () { },
+                function () { }
+                )
+        }
+        function loadMessageData(sessionId) {
+
+            getMostParentWindow().getData("../../AdminPanel/ticket/getMessageOfSession/" + sessionId,
+                function (data) {
+                    var jsonData = data;
+                    $('.messagesContainer').html("");
+                    senderID = jsonData[0].senderId;
+                    sessionID = jsonData[0].sessionID;
+                    messageText = jsonData[0].messageText;
+                    title = jsonData[0].title;
+                    serverityLevel = jsonData[0].serverityLevel;
+                    SenderId = jsonData[0].senderId;
+                    senderName = jsonData[0].senderName;
+                    RecieverName = jsonData[0].recieverName;
+                    RecieverId = jsonData[0].recieverId;
+                    messageTitle = jsonData[0].messageTitle;
+                    for (var i = 0; i < jsonData.length; i++) { 
+                        if (jsonData[i].senderId == null || senderID == jsonData[i].senderId) {
+                            addMessageToListRev(jsonData[i]);
+                        } else {
+                            addMessageToList(jsonData[i]);
+                        }
+                    }
+                },
+                function () { alert("بارگزاری اطلاعات با مشکلمواجه گردید لطفا با مدیر سیستم تماس بگیرید..."); }
+            )
+        }
+        function drawComponents() {
+            tinymce.init({
+                directionality: "rtl",
+                toolbar: 'ltr rtl',
+                plugins: 'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker imagetools textpattern noneditable help formatpainter permanentpen pageembed charmap tinycomments mentions quickbars linkchecker emoticons advtable fullpage',
+                selector: '#newMessageContainer',  // change this value according to your HTML
+                images_upload_url: '../..@Url.Action("addAttachment", "attachments")',
+                menubar: 'file edit view insert format tools table tc help',
+                toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
+            });
+
+            $('.messagesContainer').css('max-height', ($('#actionsPanel').height()-200)+'px');
+        }
+        function addMessageToListRev(message) {
+            var messageContainer = $('<div>');
+            messageContainer.css({
+                "margin": "15px",
+                "padding": "5px",
+                "background": "darkseagreen",
+                "border-top-left-radius": "5px",
+                "border-top-right-radius": "5px",
+                "border-bottom-right-radius": "5px",
+                "position": "relative"
+            });
+            var senderIndicator = $('<div>');
+            senderIndicator.css({
+                "bottom": "0px",
+                "width": "10px",
+                "height": "10px",
+                "position": "absolute",
+                "left": "-10px",
+                "border-top": "10px solid transparent",
+                "border-right": "10px solid #8fbc8f",
+                "border-bottom": "10px solid transparent"
+            });
+            messageContainer.append(senderIndicator);
+            messageContainer.append('<div class="pull-left" >' + message.messageText + '</div>');
+            messageContainer.append('<table style="width:100%;font-size: 10px;" ><tr><td style="width:33%" >'
+                + message.senderName + '</td><td style="width:33%" >'
+                + message.RecieverName + '</td><td style="width:33%" >'
+                + message.persianDateTimeInserted + '</td></tr></table>');
+            $('.messagesContainer').prepend(messageContainer);
+        }
+        function addMessageToList(message) {
+            var messageContainer = $('<div>');
+            messageContainer.css({
+                "margin": "15px",
+                "padding": "5px",
+                "background": "darkseagreen",
+                "border-top-left-radius": "5px",
+                "border-top-right-radius": "5px",
+                "border-bottom-left-radius": "5px",
+                "position": "relative"
+            });
+            var senderIndicator = $('<div>');
+            senderIndicator.css({
+                "bottom": "0px",
+                "width": "10px",
+                "height": "10px",
+                "position": "absolute",
+                "right": "-10px",
+                "border-top": "10px solid transparent",
+                "border-left": "10px solid #8fbc8f",
+                "border-bottom": "10px solid transparent"
+            });
+            messageContainer.append(senderIndicator);
+            messageContainer.append('<div class="pull-right" >' + message.messageText + '</div>');
+            messageContainer.append('<table style="width:100%;font-size: 10px;" ><tr><td style="width:33%" >'
+                + message.senderName + '</td><td style="width:33%" >'
+                + message.RecieverName + '</td><td style="width:33%" >'
+                + message.persianDateTimeInserted + '</td></tr></table>');
+            $('.messagesContainer').prepend(messageContainer);
+        }
+        function reloadDiscussions() { 
+            var actionUrl = "@Url.Action("getSessionsOfChannel", "ticket")";
+            getMostParentWindow().getData(actionUrl, function (data) {
+                $("#ul_openDiscusions").html("");
+                for (var i = 0; i < data.length; i++) {
+                    var template = "<li style='height:50px;text-align:right' value='--sessionId--'>"+
+                            "<p onclick='loadMessageData(''--sessionId--'')' style='text-align:right'>--title--</p>"+
+                        "</li>";
+                    template = template.replace('--sessionId--', data[i].sessionId);
+                    template = template.replace('--sessionId--', data[i].sessionId);
+                    template = template.replace('--title--', data[i].title);
+                    $("#ul_openDiscusions").append(template);
+                }
+            }, function () {
+            })
+        }
+        $(document).ready(function () {
+            drawComponents();
+        });
+    </script>
+</head>
+<body class="easyui-layout demo-rtl">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'east',split:true" style="width:200px;">
+            <ul id="ul_openDiscusions" class="easyui-datalist" title="گفتگو های باز" lines="true" style="text-align:right">
+                @foreach (var item in Model.ticketGroups)
+                {
+                    <li style="height:50px;text-align:right" value="@item.sessionId">
+                        <p onclick="loadMessageData('@item.sessionId')" style="text-align:right">@item.title</p>
+                    </li>
+
+                }
+            </ul>
+        </div>
+        <div id="actionsPanel" data-options="region:'center',split:true" style="position:relative;overflow:scroll">
+            <div style="overflow:scroll" class="messagesContainer">
+            </div>
+            <div class="row" style="position: absolute; bottom: 0px; right: 0px; left: 0px; background-color: #adb2f7"> 
+                <div class="col-md-10">
+                    <textarea class="ckEditrComponent" name="newMessageContainer" id="newMessageContainer"></textarea>
+                </div>
+                <div class="col-md-2">
+                    <input type="button" style="margin:10px" class="btn btn-outline btn-warning btn-lg" onclick="sendNewMessage(); return;"  value="sendMessage" />
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

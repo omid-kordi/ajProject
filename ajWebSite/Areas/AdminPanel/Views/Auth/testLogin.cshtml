@@ -1,0 +1,41 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <title>testLogin</title>
+    <script type="text/javascript">
+        function logout() {
+            var logOutUrl = "@Url.Action("logOut","Auth")";
+            postData(logOutUrl, {}, function (data) { 
+            },null,null);
+        }
+        function login(sender){
+            postForm(sender, function (data) { 
+                var tt = urlParams;
+                document.location.href = "";
+            }, function () { 
+            }, function () {  
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>You are loged In...</h1>
+    <button actionUrl="@Url.Action("logOut","Auth")" type="button" onclick="logout()">خروج...</button>
+</body>
+</html>

@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using ajWebSite.Common.Helpers;
+@using ajWebSite.Common.DTOs.Common;
+@section Scripts{
+
+    <script>
+    function submitANewUser() {
+        var registerUserUrl = "@Url.Action("registerNewUser", "Auth")";
+        var objectData = getMostParentWindow().getOBjectsOfData($("#hfr_registerForm"));
+        getMostParentWindow().postData(registerUserUrl, objectData,
+            function (data) {
+                if (data) {
+                    if (data.success) {
+                        document.location.href = "@Url.Action("Index","Home")";
+                    } else {
+                        $('htb_messageContainer').html();
+                        $('htb_messageContainer').html(data.resultMessage);
+                    }
+                }
+            }, function () {
+
+            }, function () {
+
+            }
+        );
+    }
+    $(document).ready(function (sender) {
+    }); 
+    </script>}
+    <div class="container text-center" style="text-align:right">
+        <form id="hfr_registerForm" action="@Url.Action("RegisterUser","Auth")">
+            <div id="htb_messageContainer" class="warning text-danger" >
+                
+            </div>
+            <h1>ثبت نام</h1>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>نام کاربری*</label>
+                    <input type="text" name="userName" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>نام</label>
+                    <input type="text" name="Name" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>نام خانوادگی*</label>
+                    <input type="text" name="LastName" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>تلفن همراه</label>
+                    <input type="text" name="Mobile" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>آدرس الکترونیک*</label>
+                    <input type="email" name="emailAddress" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>رمز ورود*</label>
+                    <input type="email" name="ChosenPassword" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6 offset-6 pull-right">
+                    <label>تکرار رمز ورود*</label>
+                    <input type="email" name="passwordConfirmation" class="form-control form-opacity">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <input type="button" onclick="submitANewUser()" class="btn submit" value="ثبت">
+                <a href="@Url.Action("Index","Home")" class="btn submit" value="">بازگشت</a>
+            </div>
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <img src="..." class="rounded mr-2" alt="...">
+                    <strong class="mr-auto">Bootstrap</strong>
+                    <small>11 mins ago</small>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    Hello, world! This is a toast message.
+                </div>
+            </div>
+        </form>
+    </div>

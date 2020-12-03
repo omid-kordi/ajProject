@@ -1,0 +1,287 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+@using ajWebSite.Common.Helpers;
+@using ajWebSite.Common.DTOs.Common;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Full Layout - jQuery EasyUI Demo</title>
+    <link href="/css/site.css?t=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-easyui-1.9.8/demo/demo.css">
+    <link href="/lib/jquery-easyui-1.9.8/easyui-rtl.css" rel="stylesheet" />
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-easyui-1.9.8/jquery.easyui.min.js"></script>
+    <script src="/lib/jquery-easyui-1.9.8/easyui-rtl.js"></script>
+    <script src="/lib/SPfreamWork/freamWork.js?t=@DateTime.Now.Ticks"></script>
+    <script src="/js/tinymce/jquery.tinymce.min.js"></script>
+    <script src="/lib/jalaliCalendar/src/kamadatepicker.min.js"></script>
+    <link href="/lib/jalaliCalendar/src/kamadatepicker.min.css" rel="stylesheet" />
+    <script src="~/js/tinymce/tinymce.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/popper.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function rowsClickedItemsList(index, row) { 
+            var selectedRow = $('#itemsListContainer').datagrid('getSelected');
+            load(selectedRow.id);
+        }
+        function clearFields() {
+                    $("[name*='id']").val("0");
+                    $("[name*='title']").val("");
+                    tinymce.get('ckEditorSummary').getBody().innerHTML = "";
+                    tinymce.get('ckEditorFullNewsDesc').getBody().innerHTML = "";
+                    if (node)
+                        $('#tvGroupContainer').tree('select', null);
+                    $("[name*='tags']").val("");
+                        $("#attachments").hide();
+                    $("[name*='releaseType']").val("");
+                    $("[name*='persianbeginReleaseDateTime']").val("");
+                    $("[name*='persianendReleaseDatetime']").val("");
+                    $("[name*='businessType']").val("");
+                    $("[name*='price']").val("");
+        }
+        function load(itemId) {
+            getMostParentWindow().getData("../../AdminPanel/NewsAndItem/getItem/" + itemId,
+                function (data) { 
+                    $("[name*='id']").val(data.id);
+                    $("[name*='title']").val(data.title);
+                    tinymce.get('ckEditorSummary').getBody().innerHTML = data.summary;
+                    tinymce.get('ckEditorFullNewsDesc').getBody().innerHTML = data.description;
+                    var node = $('#tvGroupContainer').tree('find', data.groupId);
+                    if (node)
+                        $('#tvGroupContainer').tree('select', node.target);
+                    $("[name*='tags']").val(data.title);
+                    if (data.id && data.id > 0) {
+                        $("#attachments").show();
+                        var urlLoadAttachments = "../..@Url.Action("getAttachmentsList", "attachments",new { id = "-itemId-",id2=1})";
+                        urlLoadAttachments = urlLoadAttachments.replace("-itemId-", data.id);
+
+                        $('#attachmentsList').datagrid('load', urlLoadAttachments);
+                    } else {
+                        $("#attachments").hide();
+                    }
+                    $("[name*='releaseType']").val(data.releaseType);
+                    $("[name*='persianbeginReleaseDateTime']").val(data.persianbeginReleaseDateTime);
+                    $("[name*='persianendReleaseDatetime']").val(data.persianendReleaseDatetime);
+                    $("[name*='businessType']").val(data.businessType);
+                    $("[name*='price']").val(data.price);
+
+                },
+                function () {
+
+                });
+
+        }
+        function DeleteAttachment(value) {
+            console.log(value);
+        }
+        function loadContents(id) {
+        }
+        function saveArticle() {
+            var formItem = $("#newsAndArticleForm");
+            var objectForSendToServer = getOBjectsOfData(formItem);
+            objectForSendToServer.summary = tinymce.get('ckEditorSummary').getBody().innerHTML;
+            objectForSendToServer.Description = tinymce.get('ckEditorFullNewsDesc').getBody().innerHTML;
+            var selectedGroup = $("#tvGroupContainer").tree('getSelected');
+            objectForSendToServer.groupId = selectedGroup.id;
+            if (objectForSendToServer.id && objectForSendToServer.id > 0) {
+                getMostParentWindow().postData("/AdminPanel/NewsAndItem/updateNewsAndItem", objectForSendToServer);
+            } else {
+                getMostParentWindow().postData("/AdminPanel/NewsAndItem/createNewItem", objectForSendToServer);
+            }
+        }
+        function drawForm() {
+            kamaDatepicker('dpBeginReleaseDate');
+            kamaDatepicker('dpEndReleaseDate');
+            tinymce.init({
+                directionality: "rtl",
+                toolbar: 'ltr rtl',
+                plugins: 'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker imagetools textpattern noneditable help formatpainter permanentpen pageembed charmap tinycomments mentions quickbars linkchecker emoticons advtable fullpage',
+                selector: '.ckEditrComponent',  // change this value according to your HTML
+                images_upload_url: '../..@Url.Action("addAttachment", "attachments")',
+                menubar: 'file edit view insert format tools table tc help',
+                toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
+            });
+            $('#itemsListContainer').datagrid({
+                title: 'لیست اخبار',
+                singleSelect: true,
+                fitColumns: true,
+                onClickRow: rowsClickedItemsList,
+                url: '@Url.Action("getItems", "NewsAndItem")',
+                columns: [[
+                    { field: 'id', title: 'کد', width: 80, sortable: true },
+                    { field: 'title', title: 'عنوان', width: 120 },
+                    { field: 'releaseTypeTitle', title: 'نوع انتشار', width: 120 },
+                    { field: 'persianbeginReleaseDateTime', title: 'تاریخ آغاز انتشار', width: 120 },
+                    { field: 'persianendReleaseDatetime', title: 'تاریخ پایان انتشار', width: 120 },
+                    { field: 'groupTitle', title: 'گروه خبری', width: 120 },
+                    { field: 'price', title: 'قیمت', width: 120 },
+                    { field: 'businessTypeTitle', title: 'نوع تجاری ایتم', width: 120 }
+                ]],
+                detailFormatter: function (rowIndex, rowData) {
+                    return '<h1>آفرین...</h1>';
+                }
+            });
+            $('#attachmentsList').datagrid('load');
+            clearFields();
+            @*$('#attachments').datagrid({
+                title: 'لیست ضمایم',
+                singleSelect: true,
+                fitColumns: true,
+                url: '@Url.Action("getAttachments", "attachments")',
+                columns: [[
+                    { field: 'Name', title: 'عنوان', width: 120 },
+                    { field: 'filePath', title: 'مسیر', width: 100 },
+                ]] });*@
+
+        }
+        function loadRowNewsAndItem(url, onSuccess, onFail) {
+            var selectedRow = $('#tt').datagrid('getSelected');
+            load(selectedRow.id);
+        }
+        function formatAttachemntActionColumn(val, row) { 
+            return '<input type"button" value="d" onClick="DeleteAttachment(val);"/>';
+
+        }
+        $(document).ready(function () {
+            drawForm();
+        });
+        function formatPrice(raw, value) { 
+            return "<span><input value='حذف' type='button' DeleteAttachment(" + raw.guId+") /></span>"
+        }
+        function addAttachmentToItem() { 
+            var fileTitle = $("#fileTitle").val(); 
+            var formData = new FormData();
+            formData.append('postedFiles', $('#fileContainer')[0].files[0]);
+            formData.append('attachmentTitle', fileTitle); 
+            var urlLoadAttachments = "../..@Url.Action("addAttachmentArticle", "attachments",new { id = "-itemId-" })";
+            var currentFormId = $("#id").val();
+            urlLoadAttachments = urlLoadAttachments.replace("-itemId-", currentFormId);
+
+            getMostParentWindow().sendFileToServer(urlLoadAttachments, formData,
+                function (data) {
+                    var urlLoadAttachments = "../..@Url.Action("getAttachmentsList", "attachments",new { id = "-itemId-",id2=1})";
+                    urlLoadAttachments = urlLoadAttachments.replace("-itemId-", currentFormId);
+                        $('#attachmentsList').datagrid('load', urlLoadAttachments );
+                },
+                function () { },
+                function () { });
+        }
+    </script>
+</head>
+<body class="easyui-layout demo-rtl" dir="rtl">
+    <h3 style="margin:5px">اخبار و مقالات</h3>
+    <div id="newsAndArticleForm" class="easyui-panel" title="مشخصات خبر"
+         style="width:100%;height:500px;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',
+                collapsible:true,">
+        <div class="row">
+            <input type="hidden" name="id" id="id" />
+            <div class="form-group col-md-4">
+                <label for="title">عنوان</label>
+                <input class="form-control" aria-describedby="عنوان" placeholder="عنوان" id="title" name="title" style="width:50%" data-options="label:'عنوان:'">
+            </div>
+            <div class="form-group col-md-12">
+                <label>خلاصه:</label>
+                <textarea class="ckEditrComponent" name="summary" id="ckEditorSummary">Hello, World!</textarea>
+            </div>
+            <div class="form-group col-md-12">
+                <label>متن کامل خبر:</label>
+                <textarea class="ckEditrComponent" name="Description" id="ckEditorFullNewsDesc"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label>گروه:</label>
+                <ul class="easyui-tree" id="tvGroupContainer" data-options="url:'@Url.Action("getGroupsByTreeViewierarchyOfNewsAnditem","Group",new {id="0" })'"></ul>
+            </div>
+            <div id="attachments" class="form-group col-md-6">
+                <table style="width:100%">
+                    <tr> 
+                        <td style="height:50px;margin:auto"> 
+                            <div>
+                                <input id="fileTitle" class="easyui-textbox">
+                                <input type="file" id="fileContainer" style="display:none" class="hide">
+                                <a href="#" onclick="$('#fileContainer')[0].click(); return;" class="easyui-linkbutton" data-options="iconCls:'icon-add'">انتخاب فایل</a>
+                                <a href="#" onclick="addAttachmentToItem(); return;" class="easyui-linkbutton" data-options="iconCls:'icon-add'">افزودن</a>
+                            </div>
+                            <table style="display:block;" data-options="fitColumns: true" url="../..@Url.Action("getAttachmentsList", "attachments",new { id = 0,id2=1})" method="get"
+                                   class="easyui-datagrid" title="ضمائم" id="attachmentsList"
+                                   singleSelect="true" iconCls="icon-file">
+                                <thead>
+                                    <tr>
+                                        <th field="name" width="80">عنوان</th>
+                                        <th field="filePath" width="80">مسیر</th>
+                                        <th field="guId" width="80" formatter='formatPrice'></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-group col-md-6 offset-6">
+                <label for="title">کلکات کلیدی</label>
+                <input class="form-control" aria-describedby="کلکات کلیدی" placeholder="کلکات کلیدی" id="tags" name="tags">
+            </div>
+            <div class="form-group col-md-4">
+                <label>نحوه انتشار:</label>
+                <select id="ddReleaseType" class="easyui-combobox" name="releaseType" style="width:200px;">
+                    @{
+                        var data = EnumHelper.GetByName("ReleaseType").Select(x => new DropdownDTO
+                        {
+                            Id = x.Key,
+                            Desc = x.Value
+                        }).OrderBy(x => x.Desc);
+
+                    }
+                    @foreach (var item in data)
+                    {
+                        <option value="@item.Id">@item.Desc</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>تاریخ آغاز انتشار:</label>
+                <input class="form-control" id="dpBeginReleaseDate" name="persianbeginReleaseDateTime" aria-describedby="تاریخ آغاز انتشار" placeholder="تاریخ آغاز انتشار">
+            </div>
+            <div class="form-group col-md-4">
+                <label>تاریخ پایان انتشار:</label>
+                <input class="form-control" aria-describedby="پایان انتشار" placeholder="پایان انتشار" id="dpEndReleaseDate" name="persianendReleaseDatetime">
+            </div>
+            <div class="form-group col-md-4">
+                <label>نحوه انتشار:</label>
+                <select id="ddReleaseType" class="easyui-combobox" name="businessType" style="width:200px;">
+                    @{
+                        data = EnumHelper.GetByName("BusinessType").Select(x => new DropdownDTO
+                        {
+                            Id = x.Key,
+                            Desc = x.Value
+                        }).OrderBy(x => x.Desc);
+                    }
+                    @foreach (var item in data)
+                    {
+                        <option value="@item.Id">@item.Desc</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="title">قیمت</label>
+                <input class="form-control" aria-describedby="قیمت" placeholder="قیمت" id="price" name="price">
+            </div>
+            <div class="form-group col-md-12">
+                <input type="button" value="ثبت" onclick="saveArticle();" />
+            </div>
+        </div>
+    </div>
+    <div id="p" class="easyui-panel" title="خبر ها"
+         style="width:100%;height:9000px;padding:10px;background:#fafafa;"
+         data-options="iconCls:'icon-save',
+                collapsible:true,">
+        <table style="width:100%" id="itemsListContainer"></table>
+    </div>
+</body>
+</html>

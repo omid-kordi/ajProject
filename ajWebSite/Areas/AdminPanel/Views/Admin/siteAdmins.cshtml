@@ -1,0 +1,16 @@
+﻿@model ajWebSite.Areas.AdminPanel.Models.Admin.siteAdmins;
+@{
+    Layout = null;
+} 
+<div class="formParent">
+    <form actionUrl="@Url.Action("siteAdmins","Admin")">
+        <input type="text" name="age" value="@Model?.age" /><br />
+        <input type="text" name="name" value="@Model?.name" /><br />
+        <input type="text" name="fammily" value="@Model?.fammily" /><br />
+        <select name="sex">
+            <option value="man">مرد</option>
+            <option value="weman">زن</option>
+        </select>
+        <button  onclick="getMostParentWindow().postForm(this); return false;" type="button" >Sende Data</button>
+    </form>
+</div>

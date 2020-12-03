@@ -1,0 +1,48 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>siteOwner</title>
+    <script type="text/javascript" >
+        function testFunc() {
+            getMostParentWindow().testIsLoading();
+        }
+        function getMostParentWindow() {
+            var mostParentWindow = window;
+            while (!(mostParentWindow.mostParentWindow)) { 
+                mostParentWindow = mostParentWindow.parent;
+            }
+            return mostParentWindow;
+        }
+    </script>
+
+</head>
+<body>
+    <h1>
+
+        <div class="formParent">
+            <form actionUrl="@Url.Action("siteAdmins","Admin")">
+                <input type="text" name="age" /><br />
+                <input type="text" name="name" /><br />
+                <input type="text" name="fammily" /><br />
+                <select name="sex">
+                    <option value="man">مرد</option>
+                    <option value="weman">زن</option>
+                </select>
+                <button onclick="getMostParentWindow().postForm(this); return false;" type="button">Sende Data</button>
+            </form>
+        </div>
+        <h1>----------------------------</h1>
+        @Html.Partial("~/Areas/AdminPanel/Views/Admin/siteAdmins.cshtml",null)   
+        Site Owner
+        <button type="submit">  Post THe page</button>
+        <button type="button" onclick="testFunc();">  Post THe page</button>
+    </h1>
+</body>
+</html>
